@@ -26,12 +26,6 @@ app.get('/todos/:id', function(req, res) {
     var todoId = parseInt(req.params.id);
     var matchedTodo = _.findWhere(todos, {id: todoId});
 
-    // todos.forEach(function(todo) {
-    //     if (todoId === todo.id) {
-    //         matchedTodo = todo;
-    //     }
-    // });
-
     if (matchedTodo) {
         res.json(matchedTodo);
     }
@@ -42,15 +36,34 @@ app.get('/todos/:id', function(req, res) {
 
 //POST request to create data  POST /todos
 app.post('/todos', function(req, res) {
-    var body = req.body;
+    var body = _.pick(req.body, 'description', 'completed');
 
-    body.id = todoNextId;
-    todoNextId += 1;
+    if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+        res.status(400).send();
+    } else {
 
-    todos.push(body);
-
-    res.send(body);
+        body.description = body.description.trim();
+        body.id = todoNextId;
+        todoNextId += 1;
+        todos.push(body);
+        res.send(body);
+    }
 });
+
+//DELETE /todos/:id
+app.delete('/todos/:id', function (req, res) {
+    var todoId = parseInt(req.params.id);
+
+    var matchedTodo = _.findWhere(todos, {id: todoId});
+
+    if (matchedTodo) {
+        console.log(matchedTodo);
+        res.json(matchedTodo);
+        todos = _.without(todos, matchedTodo);
+    } else {
+        res.status(404).send();
+    }
+}); 
 
 app.listen (PORT, function () {
     console.log('express listening on port ' + PORT);
