@@ -16,7 +16,18 @@ app.get('/', function(req, res) {
 
 //GET, get all todos, '/todos'
 app.get('/todos', function (req, res){
-    res.json(todos);
+
+    var queryParams = req.query;
+    var filteredTodos = todos;
+
+    if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+        filteredTodos = _.where(filteredTodos, {completed: true});
+    } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+        filteredTodos = _.where(filteredTodos, {completed: false});
+    }
+
+
+    res.json(filteredTodos);
 });
 
 //GET, get one todo, '/todos/:id'
@@ -56,6 +67,7 @@ app.delete('/todos/:id', function (req, res) {
 
     if (matchedTodo) {
         console.log(matchedTodo);
+        console.log("todo deleted");
         res.json(matchedTodo);
         todos = _.without(todos, matchedTodo);
     } else {
@@ -73,7 +85,7 @@ app.put('/todos/:id', function (req, res) {
 
     //if no todo is found, quit
     if (!matchedTodo) {
-        console.log("WHAT WHY");
+        console.log("No todo found for updating");
         return res.status(404).send();
     }
 
@@ -97,6 +109,7 @@ app.put('/todos/:id', function (req, res) {
     res.send(matchedTodo);
 
 });
+
 
 
 
