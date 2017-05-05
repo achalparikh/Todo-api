@@ -25,12 +25,19 @@ app.get('/todos', function (req, res){
     } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
         filteredTodos = _.where(filteredTodos, {completed: false});
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
+        filteredTodos = _.filter(filteredTodos, function(todo) {
+            return todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) > -1;
+        });
+    }
 
 
     res.json(filteredTodos);
 });
 
-//GET, get one todo, '/todos/:id'
+//GET, get one todo, '/todos/:id's
 app.get('/todos/:id', function(req, res) {
     var todoId = parseInt(req.params.id);
     var matchedTodo = _.findWhere(todos, {id: todoId});
