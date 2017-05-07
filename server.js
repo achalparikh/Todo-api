@@ -2,6 +2,7 @@ var express = require ('express');
 var bodyParser = require ('body-parser');
 var app = express();
 var _ = require('underscore');
+var db  = require ('./db.js');
 
 
 var PORT = process.env.PORT || 3000;
@@ -53,17 +54,37 @@ app.get('/todos/:id', function(req, res) {
 //POST /todos/ (add todo to the todos array)
 app.post('/todos', function(req, res) {
     var body = _.pick(req.body, 'description', 'completed');
+    // db.todo.create({
+    //     description: body.description,
+    //     completed: body.completed
+    // }).then(function(){
+    //     return db.todo.findById(1);
+    // }).then(function() {
+    //     if (db.todo) {
+    //         console.log(db.todo.toJSON());
+    //     } else {
+    //         console.log('no todo found');
+    //     }
+    // }).catch(function(e){
+    //     console.log(e);
+    // })
 
-    if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
-        res.status(400).send();
-    } else {
+    db.todo.create(body).then(function(todo){
+        res.json(todo.toJSON());
+    }).catch(function(e) {
+        console.status(400).toJSON(e);
+    });
 
-        body.description = body.description.trim();
-        body.id = todoNextId;
-        todoNextId += 1;
-        todos.push(body);
-        res.send(body);
-    }
+    // if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+    //     res.status(400).send();
+    // } else {
+
+    //     body.description = body.description.trim();
+    //     body.id = todoNextId;
+    //     todoNextId += 1;
+    //     todos.push(body);
+    //     res.send(body);
+    // }
 });
 
 //DELETE /todos/:id (delete todo by id)
@@ -117,12 +138,11 @@ app.put('/todos/:id', function (req, res) {
 
 });
 
-
-
-
-
-//Event listener 
-
-app.listen (PORT, function () {
-    console.log('express listening on port ' + PORT);
+//Event Listener
+db.sequelize.sync().then(function() {
+    app.listen (PORT, function () {
+        console.log('express listening on port ' + PORT);
+    });
 });
+
+
