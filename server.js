@@ -86,7 +86,6 @@ app.delete('/todos/:id', function (req, res) {
     }).then(function(e) {
         res.status(500).send();
     })
-
 });
     // var matchedTodo = _.findWhere(todos, {id: todoId});
 
