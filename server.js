@@ -40,23 +40,7 @@ app.get('/todos', function (req, res){
     }, function (e) {
         res.status(500).send();
     })
-    // var filteredTodos = todos;
-
-    // if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
-    //     filteredTodos = _.where(filteredTodos, {completed: true});
-    // } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
-    //     filteredTodos = _.where(filteredTodos, {completed: false});
-    // }
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-
-    // if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
-    //     filteredTodos = _.filter(filteredTodos, function(todo) {
-    //         return todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) > -1;
-    //     });
-    // }
-
-
-    //res.json(filteredTodos);
+    
 });
 
 //GET, get one todo, '/todos/:id's
@@ -73,50 +57,17 @@ app.get('/todos/:id', function(req, res) {
         res.status(500).send();
     });
 
-    // var matchedTodo = _.findWhere(todos, {id: todoId});
-
-    // if (matchedTodo) {
-    //     res.json(matchedTodo);
-    // }
-    // else {
-    //     res.status(404).send();
-    // }
 });
 
 //POST /todos/ (add todo to the todos array)
 app.post('/todos', function(req, res) {
     var body = _.pick(req.body, 'description', 'completed');
-    // db.todo.create({
-    //     description: body.description,
-    //     completed: body.completed
-    // }).then(function(){
-    //     return db.todo.findById(1);
-    // }).then(function() {
-    //     if (db.todo) {
-    //         console.log(db.todo.toJSON());
-    //     } else {
-    //         console.log('no todo found');
-    //     }
-    // }).catch(function(e){
-    //     console.log(e);
-    // })
-
     db.todo.create(body).then(function(todo){
         res.json(todo.toJSON());
     }).catch(function(e) {
         console.status(400).toJSON(e);
     });
 
-    // if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
-    //     res.status(400).send();
-    // } else {
-
-    //     body.description = body.description.trim();
-    //     body.id = todoNextId;
-    //     todoNextId += 1;
-    //     todos.push(body);
-    //     res.send(body);
-    // }
 });
 
 //DELETE /todos/:id (delete todo by id)
