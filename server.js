@@ -87,50 +87,39 @@ app.delete('/todos/:id', function (req, res) {
         res.status(500).send();
     })
 });
-    // var matchedTodo = _.findWhere(todos, {id: todoId});
-
-    // if (matchedTodo) {
-    //     console.log(matchedTodo);
-    //     console.log("todo deleted");
-    //     res.json(matchedTodo);
-    //     todos = _.without(todos, matchedTodo);
-    // } else {
-    //     res.status(404).send();
-    // }
-//}); 
 
 //PUT /todos/:id (update todo by id)
 app.put('/todos/:id', function (req, res) {
 
     var body = _.pick(req.body, 'description', 'completed');
-    var validAttributes = {};
+    var attributes = {};
     var todoId = parseInt(req.params.id);
-    var matchedTodo = _.findWhere(todos, {id: todoId});
-
-    //if no todo is found, quit
-    if (!matchedTodo) {
-        console.log("No todo found for updating");
-        return res.status(404).send();
-    }
 
     //verify the completed attribute in the request
 
-    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
-        validAttributes.completed = body.completed;
-    } else if (body.hasOwnProperty('completed')) {
-        res.status(400).send();
-    }
+    if (body.hasOwnProperty('completed')) {
+        attributes.completed = body.completed;
+    } 
 
     //verify the description attribute in the request
 
-    if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
-        validAttributes.description = body.description;
-    } else if (body.hasOwnProperty('description')) {
-        res.status(400).send();
-    }
+    if (body.hasOwnProperty('description')) {
+        attributes.description = body.description;
+    } 
 
-    _.extend(matchedTodo, validAttributes);
-    res.send(matchedTodo);
+    db.todo.findById(todoId).then(function(todo) {
+        if (todo) {
+            return todo.update(attributes);
+        } else {
+            res.status(404).send();
+        }
+    }, function(e) {
+        res.status(500).send();
+    }).then(function(todo){ 
+        res.json(todo.toJSON());
+    }, function(e) {
+        res.status(404).send();
+    })
 
 });
 
